@@ -1,0 +1,910 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phiếu Bài Tập Tương Tác: Câu Chuyện Về Một Ly Sữa</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts & FontAwesome Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Canvas Confetti -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <style>
+        body {
+            font-family: 'Nunito', sans-serif;
+            background-color: #f4f9ff;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #eef2ff;
+            border-radius: 8px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #818cf8;
+            border-radius: 8px;
+        }
+        .clickable-token {
+            display: inline-block;
+            padding: 2px 8px;
+            margin: 2px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: 2px dashed #cbd5e1;
+            user-select: none;
+        }
+        .clickable-token:hover {
+            border-color: #4f46e5;
+            background-color: #e0e7ff;
+        }
+        .clickable-token.underlined {
+            border: 2px solid #4f46e5;
+            background-color: #c7d2fe;
+            text-decoration: underline;
+            text-decoration-color: #3730a3;
+            text-decoration-thickness: 3px;
+            font-weight: 700;
+            color: #3730a3;
+        }
+        .option-card {
+            transition: all 0.2s ease;
+        }
+        .option-card:hover {
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body class="text-slate-800 min-h-screen pb-12">
+
+    <!-- Header / Navbar -->
+    <header class="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-500 text-white shadow-lg sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
+            <div class="flex items-center space-x-3">
+                <div class="bg-white/20 p-2 rounded-xl backdrop-blur-sm">
+                    <i class="fa-solid font-bold fa-book-open text-2xl text-yellow-300"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl md:text-2xl font-extrabold tracking-wide">PHIẾU BÀI TẬP TIẾNG VIỆT LỚP 5</h1>
+                    <p class="text-xs md:text-sm text-indigo-100 font-medium">Đọc hiểu: Câu chuyện về một ly sữa</p>
+                </div>
+            </div>
+            
+            <div class="flex items-center gap-2">
+                <button onclick="openConfigModal()" class="bg-white/20 hover:bg-white/30 text-white px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 backdrop-blur-sm">
+                    <i class="fa-solid fa-gear text-yellow-300"></i>
+                    <span class="hidden sm:inline">Cấu hình Trang tính</span>
+                </button>
+                <div id="topScoreBadge" class="hidden md:flex items-center space-x-2 bg-white/20 backdrop-blur-md px-4 py-1.5 rounded-full border border-white/30 shadow-inner">
+                    <i class="fa-solid fa-star text-yellow-300 text-lg"></i>
+                    <span class="font-bold text-base">Điểm: <span id="headerScore">0</span>/10</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="max-w-7xl mx-auto px-4 mt-6">
+
+        <!-- STUDENT INFORMATION CARD -->
+        <div class="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 p-0.5 rounded-2xl shadow-md mb-6">
+            <div class="bg-white rounded-[15px] p-4 md:p-5 flex flex-col md:flex-row items-center justify-between gap-4">
+                <div class="flex items-center gap-3 w-full md:w-auto">
+                    <div class="w-10 h-10 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center font-bold text-lg flex-shrink-0">
+                        <i class="fa-solid fa-user-graduate"></i>
+                    </div>
+                    <div>
+                        <h2 class="font-bold text-slate-800 text-base">THÔNG TIN HỌC SINH</h2>
+                        <p class="text-xs text-slate-500">Vui lòng điền họ tên và lớp trước khi nộp bài tự luận</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full md:w-auto md:min-w-[400px]">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 mb-1">Họ và tên học sinh <span class="text-rose-500">*</span></label>
+                        <input type="text" id="studentName" class="w-full px-3 py-2 border-2 border-slate-200 rounded-xl text-sm font-semibold text-slate-700 focus:outline-none focus:border-indigo-500" placeholder="Nguyễn Văn A">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 mb-1">Lớp <span class="text-rose-500">*</span></label>
+                        <input type="text" id="studentClass" class="w-full px-3 py-2 border-2 border-slate-200 rounded-xl text-sm font-semibold text-slate-700 focus:outline-none focus:border-indigo-500" placeholder="5A1">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+            <!-- LEFT COLUMN: Reading Story -->
+            <section class="lg:col-span-5">
+                <div class="bg-white rounded-2xl shadow-xl border border-indigo-100 p-5 md:p-6 lg:sticky lg:top-24 max-h-[85vh] flex flex-col">
+                    <div class="flex items-center justify-between pb-3 border-b border-indigo-100 mb-4">
+                        <h2 class="text-lg md:text-xl font-extrabold text-indigo-900 flex items-center gap-2">
+                            <i class="fa-solid fa-scroll text-indigo-500"></i> Văn Bản Đọc Hiểu
+                        </h2>
+                        <span class="bg-indigo-100 text-indigo-700 text-xs font-bold px-2.5 py-1 rounded-full">Toàn văn</span>
+                    </div>
+                    
+                    <div class="overflow-y-auto custom-scrollbar pr-2 space-y-4 text-justify text-slate-700 text-base leading-relaxed">
+                        <h3 class="text-center font-bold text-xl text-indigo-700 tracking-wide uppercase">Câu chuyện về một ly sữa</h3>
+                        <p class="text-xs text-center text-slate-400 italic mb-2">(Theo Nguyễn Văn Hoà)</p>
+
+                        <p>
+                            Thuở nhỏ, Ha-vớt Ke-li thường lầm lũi cuốc bộ đến trường với cái bụng đói cồn cào và cái túi trống rỗng. Một hôm, cậu đánh bạo gõ cửa căn nhà bên đường để xin chút gì ăn cho qua cơn đói... Khi cửa mở, cậu bàng hoàng nhìn thấy chủ nhà là một cô gái trẻ đẹp. Thay vì xin đồ ăn, cậu ngượng ngùng chỉ dám xin ly nước. Nhưng nhìn thấy nét mặt tiều tụy vì đói khát của cậu, cô gái đã mang ra một ly sữa lớn. Cậu uống từ từ để cảm nhận hương vị ngọt ngào của ly sữa đang làm dịu dần cái đói, rồi cậu lúng túng:
+                        </p>
+                        <p class="pl-4 border-l-4 border-indigo-400 font-medium italic text-indigo-900">
+                            - Em... phải trả bao nhiêu?
+                        </p>
+                        <p>
+                            Mỉm cười, cô gái đáp:
+                        </p>
+                        <p class="pl-4 border-l-4 border-indigo-400 font-medium italic text-indigo-900">
+                            - Lòng nhân ái đâu đòi hỏi phải đền đáp.
+                        </p>
+                        <p>
+                            Nhìn chăm chăm cô gái với tất cả lòng biết ơn, cậu nói: “Cảm ơn chị...". Ha-vớt Ke-li thấy khỏe hẳn lên không phải chỉ vì ly sữa mà còn vì tấm lòng chân thành của cô gái nhân hậu.
+                        </p>
+                        <p>
+                            Năm tháng qua đi. Một phụ nữ bị bệnh nặng. Các bác sĩ địa phương không còn khả năng cứu chữa. Bệnh nhân được chuyển về bệnh viện lớn có nhiều chuyên khoa. Bác sĩ giám đốc Ha-vớt Ke-li được mời hội chẩn. Khi nghe báo cáo, bệnh nhân được chuyển đến từ một thị trấn nhỏ có tên gọi quen thuộc, đôi mắt bác sĩ chợt sáng lên. Ngay lập tức, ông vội vã đến phòng bệnh nhân trong chiếc áo blu trắng và nhìn thấy người con gái năm xưa đang mê man trên giường bệnh. Ông hiểu mình phải làm gì.
+                        </p>
+                        <p>
+                            Sau những ngày miệt mài chiến đấu với căn bệnh hiểm nghèo, cuối cùng Ha-vớt Ke-li đã chiến thắng và người phụ nữ được cứu thoát khỏi bàn tay tử thần. Khi phòng tài vụ đưa hóa đơn thanh toán viện phí để ông ký duyệt, ông gạch chéo ô ghi số tiền và hí hoáy ghi gì đó bên cạnh... Hóa đơn được đưa đến cho người phụ nữ - bà hồi hộp không dám mở ra xem, vì chắc rằng chi phí của đợt điều trị này sẽ khiến bà phải làm việc cật lực trong suốt quãng đời còn lại.
+                        </p>
+                        <p>
+                            Nhưng... bà đã ngạc nhiên đến sững sờ khi đọc trên tờ hóa đơn dòng chữ ghi trong mục số tiền: <span class="font-semibold text-indigo-800">“Xin hãy đong đầy cho tôi một ly sữa! Ký tên: Bác sĩ Ha-vớt Ke-li"</span>.
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- RIGHT COLUMN: Exercises 1 to 10 -->
+            <section class="lg:col-span-7 space-y-6">
+
+                <form id="quizForm" onsubmit="event.preventDefault();">
+
+                    <!-- QUESTION 1 -->
+                    <div class="question-card bg-white rounded-2xl p-5 shadow-md border border-slate-200 mb-6" id="qCard1">
+                        <div class="flex items-start gap-3">
+                            <span class="bg-indigo-600 text-white text-xs font-bold px-2.5 py-1 rounded-lg mt-0.5">Câu 1</span>
+                            <div class="flex-1">
+                                <p class="font-bold text-slate-800 text-base md:text-lg mb-3">
+                                    (0.5đ) Trong lúc đói khát nhất, hỏi xin một cốc nước uống, Ha-vớt Ke-li nhận được gì từ cô gái?
+                                </p>
+                                <div class="space-y-2">
+                                    <label class="option-card flex items-center p-3 border-2 border-slate-100 rounded-xl cursor-pointer hover:bg-slate-50 transition">
+                                        <input type="radio" name="q1" value="a" class="w-4 h-4 text-indigo-600 focus:ring-indigo-500">
+                                        <span class="ml-3 font-semibold text-slate-700">a. Một ly sữa.</span>
+                                    </label>
+                                    <label class="option-card flex items-center p-3 border-2 border-slate-100 rounded-xl cursor-pointer hover:bg-slate-50 transition">
+                                        <input type="radio" name="q1" value="b" class="w-4 h-4 text-indigo-600 focus:ring-indigo-500">
+                                        <span class="ml-3 font-semibold text-slate-700">b. Một ly nước.</span>
+                                    </label>
+                                    <label class="option-card flex items-center p-3 border-2 border-slate-100 rounded-xl cursor-pointer hover:bg-slate-50 transition">
+                                        <input type="radio" name="q1" value="c" class="w-4 h-4 text-indigo-600 focus:ring-indigo-500">
+                                        <span class="ml-3 font-semibold text-slate-700">c. Một chiếc bánh mì.</span>
+                                    </label>
+                                </div>
+                                <div class="feedback hidden mt-3 p-3 rounded-xl text-sm font-medium"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- QUESTION 2 -->
+                    <div class="question-card bg-white rounded-2xl p-5 shadow-md border border-slate-200 mb-6" id="qCard2">
+                        <div class="flex items-start gap-3">
+                            <span class="bg-indigo-600 text-white text-xs font-bold px-2.5 py-1 rounded-lg mt-0.5">Câu 2</span>
+                            <div class="flex-1">
+                                <p class="font-bold text-slate-800 text-base md:text-lg mb-3">
+                                    (0.5đ) Cô gái trả lời như thế nào khi Ke-li hỏi để trả tiền?
+                                </p>
+                                <div class="space-y-2">
+                                    <label class="option-card flex items-center p-3 border-2 border-slate-100 rounded-xl cursor-pointer hover:bg-slate-50 transition">
+                                        <input type="radio" name="q2" value="a" class="w-4 h-4 text-indigo-600 focus:ring-indigo-500">
+                                        <span class="ml-3 font-semibold text-slate-700">a. Lòng nhân ái đâu đòi hỏi phải đền đáp.</span>
+                                    </label>
+                                    <label class="option-card flex items-center p-3 border-2 border-slate-100 rounded-xl cursor-pointer hover:bg-slate-50 transition">
+                                        <input type="radio" name="q2" value="b" class="w-4 h-4 text-indigo-600 focus:ring-indigo-500">
+                                        <span class="ml-3 font-semibold text-slate-700">b. Ly sữa không đáng gì.</span>
+                                    </label>
+                                    <label class="option-card flex items-center p-3 border-2 border-slate-100 rounded-xl cursor-pointer hover:bg-slate-50 transition">
+                                        <input type="radio" name="q2" value="c" class="w-4 h-4 text-indigo-600 focus:ring-indigo-500">
+                                        <span class="ml-3 font-semibold text-slate-700">c. Muốn trả bao nhiêu cũng được.</span>
+                                    </label>
+                                </div>
+                                <div class="feedback hidden mt-3 p-3 rounded-xl text-sm font-medium"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- QUESTION 3 -->
+                    <div class="question-card bg-white rounded-2xl p-5 shadow-md border border-slate-200 mb-6" id="qCard3">
+                        <div class="flex items-start gap-3">
+                            <span class="bg-indigo-600 text-white text-xs font-bold px-2.5 py-1 rounded-lg mt-0.5">Câu 3</span>
+                            <div class="flex-1">
+                                <p class="font-bold text-slate-800 text-base md:text-lg mb-3">
+                                    (0.5đ) Chuyện gì đã xảy ra với người phụ nữ?
+                                </p>
+                                <div class="space-y-2">
+                                    <label class="option-card flex items-start p-3 border-2 border-slate-100 rounded-xl cursor-pointer hover:bg-slate-50 transition">
+                                        <input type="radio" name="q3" value="a" class="w-4 h-4 text-indigo-600 focus:ring-indigo-500 mt-1">
+                                        <span class="ml-3 font-semibold text-slate-700">a. Bị bệnh nặng nhưng chị được điều trị ở nhà.</span>
+                                    </label>
+                                    <label class="option-card flex items-start p-3 border-2 border-slate-100 rounded-xl cursor-pointer hover:bg-slate-50 transition">
+                                        <input type="radio" name="q3" value="b" class="w-4 h-4 text-indigo-600 focus:ring-indigo-500 mt-1">
+                                        <span class="ml-3 font-semibold text-slate-700">b. Bị bệnh nặng và được các bác sĩ địa phương chữa khỏi.</span>
+                                    </label>
+                                    <label class="option-card flex items-start p-3 border-2 border-slate-100 rounded-xl cursor-pointer hover:bg-slate-50 transition">
+                                        <input type="radio" name="q3" value="c" class="w-4 h-4 text-indigo-600 focus:ring-indigo-500 mt-1">
+                                        <span class="ml-3 font-semibold text-slate-700">c. Bị bệnh nặng, bác sĩ địa phương không còn khả năng cứu chữa và được chuyển đến bệnh viện của bác sĩ Ha-vớt Ke-li.</span>
+                                    </label>
+                                </div>
+                                <div class="feedback hidden mt-3 p-3 rounded-xl text-sm font-medium"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- QUESTION 4 -->
+                    <div class="question-card bg-white rounded-2xl p-5 shadow-md border border-slate-200 mb-6" id="qCard4">
+                        <div class="flex items-start gap-3">
+                            <span class="bg-indigo-600 text-white text-xs font-bold px-2.5 py-1 rounded-lg mt-0.5">Câu 4</span>
+                            <div class="flex-1">
+                                <p class="font-bold text-slate-800 text-base md:text-lg mb-3">
+                                    (0.5đ) Chi tiết nào cho thấy bác sĩ Ha-vớt Ke-li đã hết lòng cứu chữa cho người phụ nữ đã cho mình ly sữa?
+                                </p>
+                                <div class="space-y-2">
+                                    <label class="option-card flex items-start p-3 border-2 border-slate-100 rounded-xl cursor-pointer hover:bg-slate-50 transition">
+                                        <input type="radio" name="q4" value="a" class="w-4 h-4 text-indigo-600 focus:ring-indigo-500 mt-1">
+                                        <span class="ml-3 font-semibold text-slate-700">a. Vội vã chạy đến thăm người bệnh trong chiếc áo blu trắng.</span>
+                                    </label>
+                                    <label class="option-card flex items-start p-3 border-2 border-slate-100 rounded-xl cursor-pointer hover:bg-slate-50 transition">
+                                        <input type="radio" name="q4" value="b" class="w-4 h-4 text-indigo-600 focus:ring-indigo-500 mt-1">
+                                        <span class="ml-3 font-semibold text-slate-700">b. Miệt mài chiến đấu nhiều ngày với căn bệnh hiểm nghèo của người phụ nữ và cứu cô thoát khỏi bàn tay tử thần.</span>
+                                    </label>
+                                    <label class="option-card flex items-start p-3 border-2 border-slate-100 rounded-xl cursor-pointer hover:bg-slate-50 transition">
+                                        <input type="radio" name="q4" value="c" class="w-4 h-4 text-indigo-600 focus:ring-indigo-500 mt-1">
+                                        <span class="ml-3 font-semibold text-slate-700">c. Tham gia những buổi hội chẩn để chẩn đoán bệnh cho bệnh nhân.</span>
+                                    </label>
+                                </div>
+                                <div class="feedback hidden mt-3 p-3 rounded-xl text-sm font-medium"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- QUESTION 5 -->
+                    <div class="question-card bg-white rounded-2xl p-5 shadow-md border border-slate-200 mb-6" id="qCard5">
+                        <div class="flex items-start gap-3">
+                            <span class="bg-indigo-600 text-white text-xs font-bold px-2.5 py-1 rounded-lg mt-0.5">Câu 5</span>
+                            <div class="flex-1">
+                                <p class="font-bold text-slate-800 text-base md:text-lg mb-3">
+                                    (0.5đ) Vì sao Ke-li lại viết “Xin hãy đong đầy cho tôi một ly sữa!” vào mục Số tiền trong hóa đơn viện phí của người phụ nữ?
+                                </p>
+                                <div class="space-y-2">
+                                    <label class="option-card flex items-start p-3 border-2 border-slate-100 rounded-xl cursor-pointer hover:bg-slate-50 transition">
+                                        <input type="radio" name="q5" value="a" class="w-4 h-4 text-indigo-600 focus:ring-indigo-500 mt-1">
+                                        <span class="ml-3 font-semibold text-slate-700">a. Vì ông muốn làm cho người phụ nữ bất ngờ.</span>
+                                    </label>
+                                    <label class="option-card flex items-start p-3 border-2 border-slate-100 rounded-xl cursor-pointer hover:bg-slate-50 transition">
+                                        <input type="radio" name="q5" value="b" class="w-4 h-4 text-indigo-600 focus:ring-indigo-500 mt-1">
+                                        <span class="ml-3 font-semibold text-slate-700">b. Vì ông đang khát.</span>
+                                    </label>
+                                    <label class="option-card flex items-start p-3 border-2 border-slate-100 rounded-xl cursor-pointer hover:bg-slate-50 transition">
+                                        <input type="radio" name="q5" value="c" class="w-4 h-4 text-indigo-600 focus:ring-indigo-500 mt-1">
+                                        <span class="ml-3 font-semibold text-slate-700">c. Vì ông nhắc đến ly sữa của lòng nhân ái và khẳng định lòng nhân ái không đòi hỏi phải trả bằng tiền.</span>
+                                    </label>
+                                </div>
+                                <div class="feedback hidden mt-3 p-3 rounded-xl text-sm font-medium"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- QUESTION 6 (TỰ LUẬN) -->
+                    <div class="question-card bg-white rounded-2xl p-5 shadow-md border border-slate-200 mb-6" id="qCard6">
+                        <div class="flex items-start gap-3">
+                            <span class="bg-indigo-600 text-white text-xs font-bold px-2.5 py-1 rounded-lg mt-0.5">Câu 6</span>
+                            <div class="flex-1">
+                                <div class="flex justify-between items-start gap-2 mb-2">
+                                    <p class="font-bold text-slate-800 text-base md:text-lg">
+                                        (1.0đ) Em hãy viết một câu văn nêu cảm nhận của em về cô gái trong câu chuyện.
+                                    </p>
+                                    <span class="bg-emerald-100 text-emerald-800 text-[10px] font-bold px-2 py-0.5 rounded-full flex-shrink-0">GửiGVChấm</span>
+                                </div>
+                                <textarea id="q6_ans" rows="3" class="w-full p-3 border-2 border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-400 focus:border-indigo-500 outline-none transition text-slate-700" placeholder="Nhập câu trả lời tự luận của em ở đây..."></textarea>
+                                
+                                <div class="mt-2 flex justify-between items-center">
+                                    <button type="button" onclick="toggleHint('hint6')" class="text-xs font-bold text-indigo-600 hover:text-indigo-800 flex items-center gap-1 focus:outline-none">
+                                        <i class="fa-solid fa-lightbulb text-yellow-500"></i> Xem gợi ý đáp án
+                                    </button>
+                                </div>
+
+                                <div id="hint6" class="hidden mt-2 p-3 bg-amber-50 border border-amber-200 rounded-xl text-xs text-amber-900 leading-relaxed">
+                                    <span class="font-bold">Gợi ý:</span> "Cô gái là một người giàu lòng nhân ái, có tấm lòng chân thành và vô cùng tốt bụng khi sẵn sàng giúp đỡ người khác mà không mong nhận lại sự đền đáp."
+                                </div>
+                                <div class="feedback hidden mt-3 p-3 rounded-xl text-sm font-medium"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- QUESTION 7 -->
+                    <div class="question-card bg-white rounded-2xl p-5 shadow-md border border-slate-200 mb-6" id="qCard7">
+                        <div class="flex items-start gap-3">
+                            <span class="bg-indigo-600 text-white text-xs font-bold px-2.5 py-1 rounded-lg mt-0.5">Câu 7</span>
+                            <div class="flex-1">
+                                <p class="font-bold text-slate-800 text-base md:text-lg mb-2">
+                                    (1.0đ) Hãy bấm chọn (gạch chân) vào các <span class="text-indigo-600 underline decoration-2">đại từ</span> trong câu văn sau:
+                                </p>
+                                <p class="text-xs text-slate-500 mb-3 italic"><i class="fa-solid fa-hand-pointer"></i> Bấm vào từ để chọn (gạch chân từ đó).</p>
+                                
+                                <div class="p-4 bg-slate-50 border border-slate-200 rounded-xl leading-loose text-base font-medium select-none" id="q7TokensContainer">
+                                    <span>- </span>
+                                    <span class="clickable-token" onclick="toggleToken(this)" data-word="Em">Em</span>
+                                    <span class="clickable-token" onclick="toggleToken(this)" data-word="...">...</span>
+                                    <span class="clickable-token" onclick="toggleToken(this)" data-word="phải">phải</span>
+                                    <span class="clickable-token" onclick="toggleToken(this)" data-word="trả">trả</span>
+                                    <span class="clickable-token" onclick="toggleToken(this)" data-word="bao nhiêu">bao nhiêu</span>
+                                    <span>?</span>
+                                </div>
+                                <div class="feedback hidden mt-3 p-3 rounded-xl text-sm font-medium"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- QUESTION 8 -->
+                    <div class="question-card bg-white rounded-2xl p-5 shadow-md border border-slate-200 mb-6" id="qCard8">
+                        <div class="flex items-start gap-3">
+                            <span class="bg-indigo-600 text-white text-xs font-bold px-2.5 py-1 rounded-lg mt-0.5">Câu 8</span>
+                            <div class="flex-1">
+                                <p class="font-bold text-slate-800 text-base md:text-lg mb-2">
+                                    (0.75đ) Những từ nào trong các từ dưới đây đồng nghĩa với từ <span class="text-indigo-700 font-extrabold">“nhân ái”</span>?
+                                </p>
+                                <p class="text-xs text-slate-500 mb-3 italic">(Có thể tích chọn nhiều từ)</p>
+                                
+                                <div class="grid grid-cols-2 md:grid-cols-4 gap-2.5" id="q8Container">
+                                    <label class="option-card flex items-center p-3 border-2 border-slate-200 rounded-xl cursor-pointer hover:bg-indigo-50/50 transition">
+                                        <input type="checkbox" name="q8" value="nhân dân" class="w-4 h-4 text-indigo-600 rounded">
+                                        <span class="ml-2 text-sm font-bold text-slate-700">nhân dân</span>
+                                    </label>
+                                    <label class="option-card flex items-center p-3 border-2 border-slate-200 rounded-xl cursor-pointer hover:bg-indigo-50/50 transition">
+                                        <input type="checkbox" name="q8" value="nhân từ" class="w-4 h-4 text-indigo-600 rounded">
+                                        <span class="ml-2 text-sm font-bold text-slate-700">nhân từ</span>
+                                    </label>
+                                    <label class="option-card flex items-center p-3 border-2 border-slate-200 rounded-xl cursor-pointer hover:bg-indigo-50/50 transition">
+                                        <input type="checkbox" name="q8" value="chân thật" class="w-4 h-4 text-indigo-600 rounded">
+                                        <span class="ml-2 text-sm font-bold text-slate-700">chân thật</span>
+                                    </label>
+                                    <label class="option-card flex items-center p-3 border-2 border-slate-200 rounded-xl cursor-pointer hover:bg-indigo-50/50 transition">
+                                        <input type="checkbox" name="q8" value="nhân hậu" class="w-4 h-4 text-indigo-600 rounded">
+                                        <span class="ml-2 text-sm font-bold text-slate-700">nhân hậu</span>
+                                    </label>
+                                    <label class="option-card flex items-center p-3 border-2 border-slate-200 rounded-xl cursor-pointer hover:bg-indigo-50/50 transition">
+                                        <input type="checkbox" name="q8" value="trung thực" class="w-4 h-4 text-indigo-600 rounded">
+                                        <span class="ml-2 text-sm font-bold text-slate-700">trung thực</span>
+                                    </label>
+                                    <label class="option-card flex items-center p-3 border-2 border-slate-200 rounded-xl cursor-pointer hover:bg-indigo-50/50 transition">
+                                        <input type="checkbox" name="q8" value="nhân đức" class="w-4 h-4 text-indigo-600 rounded">
+                                        <span class="ml-2 text-sm font-bold text-slate-700">nhân đức</span>
+                                    </label>
+                                    <label class="option-card flex items-center p-3 border-2 border-slate-200 rounded-xl cursor-pointer hover:bg-indigo-50/50 transition">
+                                        <input type="checkbox" name="q8" value="nhân tài" class="w-4 h-4 text-indigo-600 rounded">
+                                        <span class="ml-2 text-sm font-bold text-slate-700">nhân tài</span>
+                                    </label>
+                                </div>
+                                <div class="feedback hidden mt-3 p-3 rounded-xl text-sm font-medium"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- QUESTION 9 -->
+                    <div class="question-card bg-white rounded-2xl p-5 shadow-md border border-slate-200 mb-6" id="qCard9">
+                        <div class="flex items-start gap-3">
+                            <span class="bg-indigo-600 text-white text-xs font-bold px-2.5 py-1 rounded-lg mt-0.5">Câu 9</span>
+                            <div class="flex-1 space-y-4">
+                                <p class="font-bold text-slate-800 text-base md:text-lg">
+                                    (0.75đ) Xác định từ in đậm “mũi” trong các câu sau mang nghĩa gốc hay nghĩa chuyển:
+                                </p>
+
+                                <div class="space-y-3">
+                                    <div class="p-3 bg-slate-50 rounded-xl border border-slate-200 flex flex-col md:flex-row md:items-center justify-between gap-2">
+                                        <p class="text-sm font-medium text-slate-800">a) Vị tướng quân đang đứng ở <span class="font-extrabold text-indigo-600 underline">mũi</span> thuyền, nhìn về phía trước.</p>
+                                        <select id="q9_a" class="bg-white border-2 border-slate-300 rounded-lg px-3 py-1.5 text-sm font-semibold text-slate-700 focus:outline-none focus:border-indigo-500">
+                                            <option value="">-- Chọn nghĩa --</option>
+                                            <option value="gốc">Nghĩa gốc</option>
+                                            <option value="chuyển">Nghĩa chuyển</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="p-3 bg-slate-50 rounded-xl border border-slate-200 flex flex-col md:flex-row md:items-center justify-between gap-2">
+                                        <p class="text-sm font-medium text-slate-800">b) Cô gái trẻ có làn da trắng hồng, cái <span class="font-extrabold text-indigo-600 underline">mũi</span> dọc dừa, đôi mắt đen láy trông rất xinh đẹp.</p>
+                                        <select id="q9_b" class="bg-white border-2 border-slate-300 rounded-lg px-3 py-1.5 text-sm font-semibold text-slate-700 focus:outline-none focus:border-indigo-500">
+                                            <option value="">-- Chọn nghĩa --</option>
+                                            <option value="gốc">Nghĩa gốc</option>
+                                            <option value="chuyển">Nghĩa chuyển</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="p-3 bg-slate-50 rounded-xl border border-slate-200 flex flex-col md:flex-row md:items-center justify-between gap-2">
+                                        <p class="text-sm font-medium text-slate-800">c) Ông bác sĩ nhẹ nhàng giải thích về các <span class="font-extrabold text-indigo-600 underline">mũi</span> tiêm phòng cho trẻ em.</p>
+                                        <select id="q9_c" class="bg-white border-2 border-slate-300 rounded-lg px-3 py-1.5 text-sm font-semibold text-slate-700 focus:outline-none focus:border-indigo-500">
+                                            <option value="">-- Chọn nghĩa --</option>
+                                            <option value="gốc">Nghĩa gốc</option>
+                                            <option value="chuyển">Nghĩa chuyển</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="feedback hidden mt-3 p-3 rounded-xl text-sm font-medium"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- QUESTION 10 (TỰ LUẬN) -->
+                    <div class="question-card bg-white rounded-2xl p-5 shadow-md border border-slate-200 mb-6" id="qCard10">
+                        <div class="flex items-start gap-3">
+                            <span class="bg-indigo-600 text-white text-xs font-bold px-2.5 py-1 rounded-lg mt-0.5">Câu 10</span>
+                            <div class="flex-1 space-y-4">
+                                <div class="flex justify-between items-start gap-2">
+                                    <p class="font-bold text-slate-800 text-base md:text-lg">
+                                        (1.0đ) Đặt câu với từ <span class="text-indigo-600 font-extrabold">“miệng”</span>:
+                                    </p>
+                                    <span class="bg-emerald-100 text-emerald-800 text-[10px] font-bold px-2 py-0.5 rounded-full flex-shrink-0">GửiGVChấm</span>
+                                </div>
+
+                                <div class="space-y-3">
+                                    <div>
+                                        <label class="block text-xs font-bold text-slate-600 mb-1">a. Đặt 1 câu có từ "miệng" mang NGHĨA GỐC:</label>
+                                        <input type="text" id="q10_a" class="w-full p-2.5 border-2 border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-400 focus:border-indigo-500 outline-none text-sm text-slate-700" placeholder="Ví dụ: Em bé có chiếc miệng xinh xắn...">
+                                    </div>
+
+                                    <div>
+                                        <label class="block text-xs font-bold text-slate-600 mb-1">b. Đặt 1 câu có từ "miệng" mang NGHĨA CHUYỂN:</label>
+                                        <input type="text" id="q10_b" class="w-full p-2.5 border-2 border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-400 focus:border-indigo-500 outline-none text-sm text-slate-700" placeholder="Ví dụ: Chiếc miệng giếng rộng nguy hiểm...">
+                                    </div>
+                                </div>
+
+                                <div class="flex justify-between items-center">
+                                    <button type="button" onclick="toggleHint('hint10')" class="text-xs font-bold text-indigo-600 hover:text-indigo-800 flex items-center gap-1 focus:outline-none">
+                                        <i class="fa-solid fa-lightbulb text-yellow-500"></i> Xem gợi ý đáp án
+                                    </button>
+                                </div>
+
+                                <div id="hint10" class="hidden p-3 bg-amber-50 border border-amber-200 rounded-xl text-xs text-amber-900 leading-relaxed space-y-1">
+                                    <p><span class="font-bold">a) Nghĩa gốc:</span> Em bé có chiếc miệng nhỏ nhắn xinh xinh khi cười trông rất đáng yêu.</p>
+                                    <p><span class="font-bold">b) Nghĩa chuyển:</span> Chiếc miệng giếng rộng được che chắn cẩn thận để đảm bảo an toàn. (hoặc: Miệng túi đã được buộc chặt.)</p>
+                                </div>
+                                <div class="feedback hidden mt-3 p-3 rounded-xl text-sm font-medium"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons Footer -->
+                    <div class="sticky bottom-4 z-30 bg-white/95 backdrop-blur-md p-4 rounded-2xl shadow-2xl border border-indigo-100 flex flex-col sm:flex-row items-center justify-between gap-3">
+                        
+                        <div class="flex items-center justify-between w-full sm:w-auto gap-2">
+                            <button type="button" onclick="resetQuiz()" class="px-4 py-2.5 rounded-xl border-2 border-slate-300 text-slate-600 font-bold hover:bg-slate-100 active:scale-95 transition flex items-center gap-2 text-sm">
+                                <i class="fa-solid fa-rotate-left"></i> Làm lại
+                            </button>
+                            
+                            <button type="button" onclick="gradeQuiz()" class="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl active:scale-95 transition flex items-center gap-2 text-sm shadow-md">
+                                <i class="fa-solid fa-circle-check"></i> Chấm trắc nghiệm
+                            </button>
+                        </div>
+                        
+                        <button type="button" onclick="submitWrittenAnswersToSheet()" id="btnSubmitSheet" class="w-full sm:w-auto py-3 px-6 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-extrabold rounded-xl shadow-lg hover:shadow-emerald-500/30 active:scale-95 transition flex items-center justify-center gap-2 text-sm md:text-base">
+                            <i class="fa-solid fa-file-excel"></i> Nộp bài tự luận về Trang Tính (Sheet)
+                        </button>
+                    </div>
+
+                </form>
+            </section>
+
+        </div>
+    </main>
+
+    <!-- Modal result notification for Quiz -->
+    <div id="resultModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-3xl shadow-2xl max-w-md w-full p-6 text-center transform transition-all border-4 border-indigo-200">
+            <div id="modalIcon" class="w-20 h-20 mx-auto mb-4 rounded-full flex items-center justify-center text-4xl shadow-inner"></div>
+            <h3 id="modalTitle" class="text-2xl font-extrabold text-slate-800 mb-1">Kết quả bài làm</h3>
+            <p id="modalSub" class="text-slate-500 text-sm mb-4">Bạn đã hoàn thành phiếu bài tập!</p>
+            
+            <div class="bg-indigo-50 rounded-2xl p-4 mb-6 border border-indigo-100">
+                <span class="text-xs uppercase font-bold text-indigo-400 tracking-wider">Điểm tự động (Các câu trắc nghiệm)</span>
+                <div class="text-4xl font-extrabold text-indigo-600 my-1"><span id="finalScore">0</span> / 10</div>
+                <p id="modalMessage" class="text-xs text-indigo-800 font-medium mt-1"></p>
+            </div>
+
+            <div class="flex gap-3">
+                <button onclick="closeModal()" class="flex-1 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl transition">
+                    Đóng
+                </button>
+                <button onclick="submitWrittenAnswersToSheet(); closeModal();" class="flex-1 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl shadow-md transition flex items-center justify-center gap-1.5 text-xs">
+                    <i class="fa-solid fa-paper-plane"></i> Nộp bài tự luận
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Google Apps Script Config -->
+    <div id="configModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-3xl shadow-2xl max-w-lg w-full p-6 text-left border-4 border-purple-200 relative">
+            <button onclick="closeConfigModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 w-8 h-8 rounded-full flex items-center justify-center bg-slate-100">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            
+            <div class="flex items-center gap-3 mb-3">
+                <div class="w-10 h-10 rounded-xl bg-purple-100 text-purple-600 flex items-center justify-center font-bold">
+                    <i class="fa-solid fa-sliders text-lg"></i>
+                </div>
+                <div>
+                    <h3 class="text-lg font-extrabold text-slate-800">Cấu hình kết nối Google Sheet</h3>
+                    <p class="text-xs text-slate-500">Dành cho Giáo viên để nhận bài tự luận của học sinh</p>
+                </div>
+            </div>
+
+            <div class="space-y-3 my-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Google Apps Script Web App URL:</label>
+                    <input type="text" id="scriptUrlInput" class="w-full px-3 py-2 border-2 border-slate-200 rounded-xl text-xs font-mono text-slate-800 focus:outline-none focus:border-purple-500" placeholder="https://script.google.com/macros/s/.../exec">
+                </div>
+
+                <div class="bg-slate-50 p-3 rounded-xl border border-slate-200 text-xs text-slate-600 space-y-1.5">
+                    <p class="font-bold text-purple-700"><i class="fa-solid fa-code"></i> Mã Apps Script mẫu trên Google Sheet:</p>
+                    <pre class="bg-slate-800 text-slate-100 p-2 rounded-lg text-[11px] overflow-x-auto"><code>function doPost(e) {
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+  var d = e.parameter;
+  sheet.appendRow([new Date(), d.name, d.class, d.q6, d.q10a, d.q10b]);
+  return ContentService.createTextOutput("Success");
+}</code></pre>
+                </div>
+            </div>
+
+            <div class="flex gap-2 justify-end">
+                <button onclick="closeConfigModal()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl text-xs">Hủy</button>
+                <button onclick="saveConfigUrl()" class="px-5 py-2 bg-purple-600 hover:bg-purple-700 text-white font-bold rounded-xl text-xs shadow-md">Lưu Cấu Hình</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript Logic -->
+    <script>
+        // Store Script URL in LocalStorage
+        let googleScriptUrl = localStorage.getItem('script_url_ly_sua') || '';
+
+        window.onload = function() {
+            if(googleScriptUrl) {
+                document.getElementById('scriptUrlInput').value = googleScriptUrl;
+            }
+        };
+
+        function openConfigModal() {
+            document.getElementById('configModal').classList.remove('hidden');
+        }
+
+        function closeConfigModal() {
+            document.getElementById('configModal').classList.add('hidden');
+        }
+
+        function saveConfigUrl() {
+            const url = document.getElementById('scriptUrlInput').value.trim();
+            googleScriptUrl = url;
+            localStorage.setItem('script_url_ly_sua', url);
+            closeConfigModal();
+            alert("Đã lưu URL kết nối Google Sheet thành công!");
+        }
+
+        // Toggle underlines for Sentence 7 tokens
+        function toggleToken(element) {
+            element.classList.toggle('underlined');
+        }
+
+        // Toggle Hint boxes
+        function toggleHint(hintId) {
+            const hintBox = document.getElementById(hintId);
+            if (hintBox) {
+                hintBox.classList.toggle('hidden');
+            }
+        }
+
+        // Submit Written Answers to Google Sheet
+        function submitWrittenAnswersToSheet() {
+            const name = document.getElementById('studentName').value.trim();
+            const studentClass = document.getElementById('studentClass').value.trim();
+            const q6 = document.getElementById('q6_ans').value.trim();
+            const q10a = document.getElementById('q10_a').value.trim();
+            const q10b = document.getElementById('q10_b').value.trim();
+
+            if (!name || !studentClass) {
+                alert("Vui lòng điền Họ tên và Lớp ở phần THÔNG TIN HỌC SINH trước khi nộp bài!");
+                document.getElementById('studentName').focus();
+                return;
+            }
+
+            if (!q6 && !q10a && !q10b) {
+                alert("Vui lòng nhập câu trả lời cho Câu 6 hoặc Câu 10 trước khi nộp!");
+                return;
+            }
+
+            if (!googleScriptUrl) {
+                alert("Chưa cài đặt URL kết nối Google Sheet! Vui lòng bấm vào nút 'Cấu hình Trang tính' ở góc trên cùng để giáo viên dán URL.");
+                openConfigModal();
+                return;
+            }
+
+            const btn = document.getElementById('btnSubmitSheet');
+            const originalText = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Đang gửi bài...';
+
+            const payload = new URLSearchParams({
+                name: name,
+                class: studentClass,
+                q6: q6,
+                q10a: q10a,
+                q10b: q10b
+            });
+
+            fetch(googleScriptUrl, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: payload
+            })
+            .then(() => {
+                btn.disabled = false;
+                btn.innerHTML = originalText;
+                alert(`Chúc mừng ${name} (Lớp ${studentClass})! Bài tự luận của em đã được gửi về Trang tính cho Giáo viên chấm điểm thành công.`);
+            })
+            .catch(error => {
+                btn.disabled = false;
+                btn.innerHTML = originalText;
+                console.error("Error sending to sheet:", error);
+                alert("Gửi bài thất bại. Vui lòng kiểm tra lại kết nối mạng hoặc đường dẫn Google Apps Script!");
+            });
+        }
+
+        // Grading Logic
+        function gradeQuiz() {
+            let totalScore = 0;
+
+            // Q1 (0.5đ) - Correct: a
+            const q1Val = document.querySelector('input[name="q1"]:checked')?.value;
+            const qCard1 = document.getElementById('qCard1');
+            const fb1 = qCard1.querySelector('.feedback');
+            fb1.classList.remove('hidden', 'bg-emerald-100', 'text-emerald-800', 'bg-rose-100', 'text-rose-800');
+            if (q1Val === 'a') {
+                totalScore += 0.5;
+                fb1.classList.add('bg-emerald-100', 'text-emerald-800');
+                fb1.innerHTML = '<i class="fa-solid fa-circle-check text-emerald-600"></i> Đúng! (+0.5đ)';
+            } else {
+                fb1.classList.add('bg-rose-100', 'text-rose-800');
+                fb1.innerHTML = '<i class="fa-solid fa-circle-xmark text-rose-600"></i> Chưa chính xác. Đáp án đúng: <b>a. Một ly sữa.</b>';
+            }
+
+            // Q2 (0.5đ) - Correct: a
+            const q2Val = document.querySelector('input[name="q2"]:checked')?.value;
+            const qCard2 = document.getElementById('qCard2');
+            const fb2 = qCard2.querySelector('.feedback');
+            fb2.classList.remove('hidden', 'bg-emerald-100', 'text-emerald-800', 'bg-rose-100', 'text-rose-800');
+            if (q2Val === 'a') {
+                totalScore += 0.5;
+                fb2.classList.add('bg-emerald-100', 'text-emerald-800');
+                fb2.innerHTML = '<i class="fa-solid fa-circle-check text-emerald-600"></i> Đúng! (+0.5đ)';
+            } else {
+                fb2.classList.add('bg-rose-100', 'text-rose-800');
+                fb2.innerHTML = '<i class="fa-solid fa-circle-xmark text-rose-600"></i> Chưa chính xác. Đáp án đúng: <b>a. Lòng nhân ái đâu đòi hỏi phải đền đáp.</b>';
+            }
+
+            // Q3 (0.5đ) - Correct: c
+            const q3Val = document.querySelector('input[name="q3"]:checked')?.value;
+            const qCard3 = document.getElementById('qCard3');
+            const fb3 = qCard3.querySelector('.feedback');
+            fb3.classList.remove('hidden', 'bg-emerald-100', 'text-emerald-800', 'bg-rose-100', 'text-rose-800');
+            if (q3Val === 'c') {
+                totalScore += 0.5;
+                fb3.classList.add('bg-emerald-100', 'text-emerald-800');
+                fb3.innerHTML = '<i class="fa-solid fa-circle-check text-emerald-600"></i> Đúng! (+0.5đ)';
+            } else {
+                fb3.classList.add('bg-rose-100', 'text-rose-800');
+                fb3.innerHTML = '<i class="fa-solid fa-circle-xmark text-rose-600"></i> Chưa chính xác. Đáp án đúng: <b>c. Bị bệnh nặng, bác sĩ địa phương không còn khả năng cứu chữa và được chuyển đến bệnh viện của bác sĩ Ha-vớt Ke-li.</b>';
+            }
+
+            // Q4 (0.5đ) - Correct: b
+            const q4Val = document.querySelector('input[name="q4"]:checked')?.value;
+            const qCard4 = document.getElementById('qCard4');
+            const fb4 = qCard4.querySelector('.feedback');
+            fb4.classList.remove('hidden', 'bg-emerald-100', 'text-emerald-800', 'bg-rose-100', 'text-rose-800');
+            if (q4Val === 'b') {
+                totalScore += 0.5;
+                fb4.classList.add('bg-emerald-100', 'text-emerald-800');
+                fb4.innerHTML = '<i class="fa-solid fa-circle-check text-emerald-600"></i> Đúng! (+0.5đ)';
+            } else {
+                fb4.classList.add('bg-rose-100', 'text-rose-800');
+                fb4.innerHTML = '<i class="fa-solid fa-circle-xmark text-rose-600"></i> Chưa chính xác. Đáp án đúng: <b>b. Miệt mài chiến đấu nhiều ngày với căn bệnh hiểm nghèo của người phụ nữ...</b>';
+            }
+
+            // Q5 (0.5đ) - Correct: c
+            const q5Val = document.querySelector('input[name="q5"]:checked')?.value;
+            const qCard5 = document.getElementById('qCard5');
+            const fb5 = qCard5.querySelector('.feedback');
+            fb5.classList.remove('hidden', 'bg-emerald-100', 'text-emerald-800', 'bg-rose-100', 'text-rose-800');
+            if (q5Val === 'c') {
+                totalScore += 0.5;
+                fb5.classList.add('bg-emerald-100', 'text-emerald-800');
+                fb5.innerHTML = '<i class="fa-solid fa-circle-check text-emerald-600"></i> Đúng! (+0.5đ)';
+            } else {
+                fb5.classList.add('bg-rose-100', 'text-rose-800');
+                fb5.innerHTML = '<i class="fa-solid fa-circle-xmark text-rose-600"></i> Chưa chính xác. Đáp án đúng: <b>c. Vì ông nhắc đến ly sữa của lòng nhân ái và khẳng định lòng nhân ái không đòi hỏi phải trả bằng tiền.</b>';
+            }
+
+            // Q6 (1.0đ) - Essay Feedback
+            const q6Val = document.getElementById('q6_ans').value.trim();
+            const qCard6 = document.getElementById('qCard6');
+            const fb6 = qCard6.querySelector('.feedback');
+            fb6.classList.remove('hidden', 'bg-emerald-100', 'text-emerald-800', 'bg-amber-100', 'text-amber-800', 'bg-rose-100', 'text-rose-800');
+            if (q6Val.length >= 10) {
+                totalScore += 1.0;
+                fb6.classList.add('bg-emerald-100', 'text-emerald-800');
+                fb6.innerHTML = '<i class="fa-solid fa-circle-check text-emerald-600"></i> Hoàn thành câu trả lời tự luận! Hãy bấm nút "Nộp bài tự luận về Trang Tính" để giáo viên chấm điểm chính thức. (+1.0đ tạm tính)';
+            } else if (q6Val.length > 0) {
+                totalScore += 0.5;
+                fb6.classList.add('bg-amber-100', 'text-amber-800');
+                fb6.innerHTML = '<i class="fa-solid fa-triangle-exclamation text-amber-600"></i> Câu trả lời khá ngắn. Em nên viết đầy đủ câu hơn. (+0.5đ tạm tính)';
+            } else {
+                fb6.classList.add('bg-rose-100', 'text-rose-800');
+                fb6.innerHTML = '<i class="fa-solid fa-circle-xmark text-rose-600"></i> Em chưa viết câu trả lời. Hãy bấm "Xem gợi ý đáp án" để tham khảo.';
+            }
+
+            // Q7 (1.0đ) - Pronouns: 'Em', 'bao nhiêu'
+            const selectedTokens = Array.from(document.querySelectorAll('#q7TokensContainer .clickable-token.underlined'))
+                                        .map(el => el.getAttribute('data-word'));
+            const qCard7 = document.getElementById('qCard7');
+            const fb7 = qCard7.querySelector('.feedback');
+            fb7.classList.remove('hidden', 'bg-emerald-100', 'text-emerald-800', 'bg-amber-100', 'text-amber-800', 'bg-rose-100', 'text-rose-800');
+            
+            const isQ7Correct = selectedTokens.length === 2 && 
+                                selectedTokens.includes('Em') && 
+                                selectedTokens.includes('bao nhiêu');
+
+            if (isQ7Correct) {
+                totalScore += 1.0;
+                fb7.classList.add('bg-emerald-100', 'text-emerald-800');
+                fb7.innerHTML = '<i class="fa-solid fa-circle-check text-emerald-600"></i> Chính xác tuyệt đối! Đại từ trong câu là: <b>Em</b>, <b>bao nhiêu</b>. (+1.0đ)';
+            } else if (selectedTokens.includes('Em') || selectedTokens.includes('bao nhiêu')) {
+                totalScore += 0.5;
+                fb7.classList.add('bg-amber-100', 'text-amber-800');
+                fb7.innerHTML = '<i class="fa-solid fa-circle-exclamation text-amber-600"></i> Gần đúng. Đáp án đầy đủ là 2 đại từ: <b>Em</b> và <b>bao nhiêu</b>. (+0.5đ)';
+            } else {
+                fb7.classList.add('bg-rose-100', 'text-rose-800');
+                fb7.innerHTML = '<i class="fa-solid fa-circle-xmark text-rose-600"></i> Chưa đúng. Các đại từ cần gạch chân là: <b>Em</b>, <b>bao nhiêu</b>.';
+            }
+
+            // Q8 (0.75đ) - Synonyms for "nhân ái": nhân từ, nhân hậu, nhân đức
+            const selectedQ8 = Array.from(document.querySelectorAll('input[name="q8"]:checked')).map(el => el.value);
+            const qCard8 = document.getElementById('qCard8');
+            const fb8 = qCard8.querySelector('.feedback');
+            fb8.classList.remove('hidden', 'bg-emerald-100', 'text-emerald-800', 'bg-amber-100', 'text-amber-800', 'bg-rose-100', 'text-rose-800');
+
+            const correctQ8 = ['nhân từ', 'nhân hậu', 'nhân đức'];
+            const isQ8Exact = selectedQ8.length === 3 && correctQ8.every(val => selectedQ8.includes(val));
+            const countCorrectQ8 = selectedQ8.filter(val => correctQ8.includes(val)).length;
+            const countWrongQ8 = selectedQ8.filter(val => !correctQ8.includes(val)).length;
+
+            if (isQ8Exact) {
+                totalScore += 0.75;
+                fb8.classList.add('bg-emerald-100', 'text-emerald-800');
+                fb8.innerHTML = '<i class="fa-solid fa-circle-check text-emerald-600"></i> Đúng! Các từ đồng nghĩa là: <b>nhân từ, nhân hậu, nhân đức</b>. (+0.75đ)';
+            } else if (countCorrectQ8 > 0 && countWrongQ8 === 0) {
+                const partial = +(0.25 * countCorrectQ8).toFixed(2);
+                totalScore += partial;
+                fb8.classList.add('bg-amber-100', 'text-amber-800');
+                fb8.innerHTML = `<i class="fa-solid fa-circle-exclamation text-amber-600"></i> Em chọn đúng ${countCorrectQ8}/3 từ. Các từ đúng là: <b>nhân từ, nhân hậu, nhân đức</b>. (+${partial}đ)`;
+            } else {
+                fb8.classList.add('bg-rose-100', 'text-rose-800');
+                fb8.innerHTML = '<i class="fa-solid fa-circle-xmark text-rose-600"></i> Chưa chính xác. Các từ đồng nghĩa với "nhân ái" gồm: <b>nhân từ, nhân hậu, nhân đức</b>.';
+            }
+
+            // Q9 (0.75đ) - a: chuyển, b: gốc, c: chuyển
+            const q9a = document.getElementById('q9_a').value;
+            const q9b = document.getElementById('q9_b').value;
+            const q9c = document.getElementById('q9_c').value;
+            const qCard9 = document.getElementById('qCard9');
+            const fb9 = qCard9.querySelector('.feedback');
+            fb9.classList.remove('hidden', 'bg-emerald-100', 'text-emerald-800', 'bg-amber-100', 'text-amber-800', 'bg-rose-100', 'text-rose-800');
+
+            let q9Score = 0;
+            if (q9a === 'chuyển') q9Score += 0.25;
+            if (q9b === 'gốc') q9Score += 0.25;
+            if (q9c === 'chuyển') q9Score += 0.25;
+
+            totalScore += q9Score;
+            if (q9Score === 0.75) {
+                fb9.classList.add('bg-emerald-100', 'text-emerald-800');
+                fb9.innerHTML = '<i class="fa-solid fa-circle-check text-emerald-600"></i> Hoàn thành chính xác cả 3 câu! (+0.75đ)';
+            } else if (q9Score > 0) {
+                fb9.classList.add('bg-amber-100', 'text-amber-800');
+                fb9.innerHTML = `<i class="fa-solid fa-circle-exclamation text-amber-600"></i> Em làm đúng ${Math.round(q9Score/0.25)}/3 câu. (Đáp án: a - Nghĩa chuyển, b - Nghĩa gốc, c - Nghĩa chuyển). (+${q9Score}đ)`;
+            } else {
+                fb9.classList.add('bg-rose-100', 'text-rose-800');
+                fb9.innerHTML = '<i class="fa-solid fa-circle-xmark text-rose-600"></i> Chưa chính xác. Đáp án đúng: <b>a: Nghĩa chuyển, b: Nghĩa gốc, c: Nghĩa chuyển</b>.';
+            }
+
+            // Q10 (1.0đ) - Sentence Creation
+            const q10a = document.getElementById('q10_a').value.trim();
+            const q10b = document.getElementById('q10_b').value.trim();
+            const qCard10 = document.getElementById('qCard10');
+            const fb10 = qCard10.querySelector('.feedback');
+            fb10.classList.remove('hidden', 'bg-emerald-100', 'text-emerald-800', 'bg-amber-100', 'text-amber-800', 'bg-rose-100', 'text-rose-800');
+
+            let q10Score = 0;
+            if (q10a.length >= 5) q10Score += 0.5;
+            if (q10b.length >= 5) q10Score += 0.5;
+
+            totalScore += q10Score;
+            if (q10Score === 1.0) {
+                fb10.classList.add('bg-emerald-100', 'text-emerald-800');
+                fb10.innerHTML = '<i class="fa-solid fa-circle-check text-emerald-600"></i> Đã hoàn thành đặt cả 2 câu! (+1.0đ tạm tính)';
+            } else if (q10Score > 0) {
+                fb10.classList.add('bg-amber-100', 'text-amber-800');
+                fb10.innerHTML = '<i class="fa-solid fa-circle-exclamation text-amber-600"></i> Em mới hoàn thành 1 câu. Hãy đặt đủ cả 2 câu nhé! (+0.5đ tạm tính)';
+            } else {
+                fb10.classList.add('bg-rose-100', 'text-rose-800');
+                fb10.innerHTML = '<i class="fa-solid fa-circle-xmark text-rose-600"></i> Em chưa đặt câu. Bấm "Xem gợi ý đáp án" để tham khảo mẫu câu.';
+            }
+
+            totalScore = Math.round(totalScore * 100) / 100;
+            document.getElementById('headerScore').innerText = totalScore;
+            document.getElementById('topScoreBadge').classList.remove('hidden');
+
+            showResultModal(totalScore);
+        }
+
+        function showResultModal(score) {
+            const modal = document.getElementById('resultModal');
+            const finalScoreEl = document.getElementById('finalScore');
+            const modalIcon = document.getElementById('modalIcon');
+            const modalTitle = document.getElementById('modalTitle');
+            const modalMsg = document.getElementById('modalMessage');
+
+            finalScoreEl.innerText = score;
+            modal.classList.remove('hidden');
+
+            if (score >= 8) {
+                modalIcon.className = "w-20 h-20 mx-auto mb-4 rounded-full flex items-center justify-center text-4xl shadow-inner bg-emerald-100 text-emerald-600";
+                modalIcon.innerHTML = '<i class="fa-solid fa-trophy"></i>';
+                modalTitle.innerText = "Xuất sắc!";
+                modalMsg.innerText = "Em làm bài rất giỏi, hãy tiếp tục phát huy nhé!";
+                confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
+            } else if (score >= 5) {
+                modalIcon.className = "w-20 h-20 mx-auto mb-4 rounded-full flex items-center justify-center text-4xl shadow-inner bg-amber-100 text-amber-600";
+                modalIcon.innerHTML = '<i class="fa-solid fa-star-half-stroke"></i>';
+                modalTitle.innerText = "Khá lắm!";
+                modalMsg.innerText = "Em đã cố gắng rất tốt, hãy kiểm tra lại các câu chưa chính xác nhé.";
+            } else {
+                modalIcon.className = "w-20 h-20 mx-auto mb-4 rounded-full flex items-center justify-center text-4xl shadow-inner bg-rose-100 text-rose-600";
+                modalIcon.innerHTML = '<i class="fa-solid fa-heart-pulse"></i>';
+                modalTitle.innerText = "Cố gắng lên nhé!";
+                modalMsg.innerText = "Em nên đọc kỹ lại bài văn và thử làm lại một lần nữa.";
+            }
+        }
+
+        function closeModal() {
+            document.getElementById('resultModal').classList.add('hidden');
+        }
+
+        function resetQuiz() {
+            document.getElementById('quizForm').reset();
+            document.querySelectorAll('#q7TokensContainer .clickable-token').forEach(el => el.classList.remove('underlined'));
+            document.querySelectorAll('.feedback').forEach(fb => {
+                fb.classList.add('hidden');
+                fb.innerHTML = '';
+            });
+            document.getElementById('hint6').classList.add('hidden');
+            document.getElementById('hint10').classList.add('hidden');
+            document.getElementById('headerScore').innerText = '0';
+        }
+    </script>
+</body>
+</html>
